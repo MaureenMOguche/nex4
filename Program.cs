@@ -34,11 +34,6 @@ internal class Program
 
             var numbers = stringNumbers.Split(',');
 
-            if (numbers.Length > 2)
-            {
-                throw new InvalidOperationException("Please provide only two numbers");
-            }
-
             foreach (var number in numbers)
             {
                 if (!int.TryParse(number, out _))
