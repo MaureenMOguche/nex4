@@ -50,6 +50,11 @@ internal class Program
                     }
                     else
                     {
+                        if (int.Parse(number) > 1000)
+                        {
+                            continue;
+                        }
+
                         nums.Add(int.Parse(number));
                     }
                 }
