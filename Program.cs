@@ -41,7 +41,6 @@ internal class Program
                 var lengthOfDelimiter = endOfDelimiter - 2;
                 delimiter = stringNumbers.Substring(2,lengthOfDelimiter);
 
-                if (delimiter.Length > 1) throw new InvalidOperationException("Delimiter should be only one character long");
             }
 
             var numbers = stringNumbers.Split(new string[] { ",", "\\n", delimiter }, StringSplitOptions.RemoveEmptyEntries);
