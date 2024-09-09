@@ -15,6 +15,7 @@ internal class Program
         while(true)
         {
             List<int> nums = new List<int>();
+            List<int> negatives = new List<int>();
 
             Console.WriteLine("Enter two numbers separated by comma to add");
 
@@ -43,10 +44,21 @@ internal class Program
                 }
                 else
                 {
-                    nums.Add(int.Parse(number));
+                    if (int.Parse(number) < 0)
+                    {
+                        negatives.Add(int.Parse(number));
+                    }
+                    else
+                    {
+                        nums.Add(int.Parse(number));
+                    }
                 }
             }
 
+            if (negatives.Count > 0)
+            {
+                throw new InvalidOperationException($"Negatives not allowed: {string.Join(",", negatives)}");
+            }
             var sum = nums.Sum();
             Console.WriteLine($"Sum of {string.Join(",", nums)} is {sum}");
 
