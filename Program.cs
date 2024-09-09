@@ -32,7 +32,8 @@ internal class Program
                 break;
             }
 
-            var numbers = stringNumbers.Split(',');
+            var numbers = stringNumbers.Split(new string[] { ",", "\\n" }, StringSplitOptions.RemoveEmptyEntries);
+
 
             foreach (var number in numbers)
             {
