@@ -60,14 +60,14 @@ public class InputHandler
 {
     public List<int> ParseInput(string input)
     {
-        var delimiters = new List<string> { ",", "\n" };
+        var delimiters = new List<string> { ",", "\\n" };
         var numbers = input;
 
         if (input.StartsWith("//"))
         {
-            var customDelimiterInput = input.Substring(2, input.IndexOf("\n") - 2);
+            var customDelimiterInput = input.Substring(2, input.IndexOf("\\n") - 2);
             delimiters.AddRange(ParseCustomDelimiters(customDelimiterInput));
-            numbers = input.Substring(input.IndexOf("\n") + 1);
+            numbers = input.Substring(input.IndexOf("\\n"));
         }
 
         return numbers.Split(delimiters.ToArray(), StringSplitOptions.RemoveEmptyEntries)
