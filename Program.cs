@@ -6,78 +6,90 @@ internal class Program
     static void Main(string[] args)
     {
 
-        Add();
-    }
+        var calculator = new Calculator();
+        var inputHandler = new InputHandler();
 
-
-    public static void Add()
-    {
-        while(true)
+        while (true)
         {
-            List<int> nums = new List<int>();
-            List<int> negatives = new List<int>();
-
-            Console.WriteLine("Enter two numbers separated by comma to add");
-
+            Console.WriteLine("Enter numbers to add (or 'x' to exit):");
             string input = Console.ReadLine();
 
-            if (string.IsNullOrEmpty(input))
-            {
-                Console.WriteLine($"Sum of {string.Join(",", input)} is 0");
-            }
-
-            var stringNumbers = input.Replace(" ", "");
-
-            if (stringNumbers.ToLower() == "x")
-            {
+            if (input?.ToLower() == "x")
                 break;
-            }
 
-            var delimiter = ",";
-
-            if (stringNumbers.StartsWith("//"))
+            try
             {
-                var endOfDelimiter = stringNumbers.IndexOf("\\n");
-                var lengthOfDelimiter = endOfDelimiter - 2;
-                delimiter = stringNumbers.Substring(2,lengthOfDelimiter);
-
+                var result = calculator.Add(input);
+                Console.WriteLine($"Result: {result}");
             }
-
-            var numbers = stringNumbers.Split(new string[] { ",", "\\n", delimiter }, StringSplitOptions.RemoveEmptyEntries);
-
-
-            foreach (var number in numbers)
+            catch (Exception ex)
             {
-                if (!int.TryParse(number, out _))
-                {
-                    continue;
-                }
-                else
-                {
-                    if (int.Parse(number) < 0)
-                    {
-                        negatives.Add(int.Parse(number));
-                    }
-                    else
-                    {
-                        if (int.Parse(number) > 1000)
-                        {
-                            continue;
-                        }
+                Console.WriteLine($"Error: {ex.Message}");
 
-                        nums.Add(int.Parse(number));
-                    }
-                }
             }
-
-            if (negatives.Count > 0)
-            {
-                throw new InvalidOperationException($"Negatives not allowed: {string.Join(",", negatives)}");
-            }
-            var sum = nums.Sum();
-            Console.WriteLine($"Sum of {string.Join(",", nums)} is {sum}");
-
-
         }
     }
 }
+
+public class Calculator
+{
+    public int Add(string numbers)
+    {
+        if (string.IsNullOrWhiteSpace(numbers))
+            return 0;
+
+        var inputHandler = new InputHandler();
+        var parsedNumbers = inputHandler.ParseInput(numbers);
+
+        ValidateNumbers(parsedNumbers);
+
+        return parsedNumbers.Sum();
+    }
+
+    private void ValidateNumbers(List<int> numbers)
+    {
+        var negatives = numbers.Where(n => n < 0).ToList();
+        if (negatives.Any())
+        {
+            throw new ArgumentException($"Negatives not allowed: {string.Join(", ", negatives)}");
+        }
+    }
+}
+
+public class InputHandler
+{
+    public List<int> ParseInput(string input)
+    {
+        var delimiters = new List<string> { ",", "\n" };
+        var numbers = input;
+
+        if (input.StartsWith("//"))
+        {
+            var customDelimiterInput = input.Substring(2, input.IndexOf("\n") - 2);
+            delimiters.AddRange(ParseCustomDelimiters(customDelimiterInput));
+            numbers = input.Substring(input.IndexOf("\n") + 1);
+        }
+
+        return numbers.Split(delimiters.ToArray(), StringSplitOptions.RemoveEmptyEntries)
+                      .Select(ParseNumber)
+                      .Where(n => n <= 1000)
+                      .ToList();
+    }
+
+    private List<string> ParseCustomDelimiters(string input)
+    {
+        if (input.StartsWith("[") && input.EndsWith("]"))
+        {
+            return input.Trim('[', ']')
+                        .Split(new[] { "][" }, StringSplitOptions.RemoveEmptyEntries)
+                        .ToList();
+        }
+        return new List<string> { input };
+    }
+
+    private int ParseNumber(string number)
+    {
+        return int.TryParse(number, out int result) ? result : 0;
+    }
+}
+
